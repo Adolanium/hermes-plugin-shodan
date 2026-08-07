@@ -1,0 +1,47 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Hermes pins >=3.11,<3.14. Windows is in the matrix because a good
+        # share of Hermes desktop users are on it and path handling is the
+        # usual place a plugin quietly breaks there.
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install test dependencies
+        # The plugin itself adds nothing to a Hermes install: httpx, rich and
+        # pyyaml are already pinned core dependencies there. They are listed
+        # here only because CI has no Hermes to inherit them from.
+        run: python -m pip install --upgrade pip httpx rich pyyaml pytest
+
+      - name: Run tests
+        # Not bare `pytest`. See the comment in tests/pytest.ini.
+        run: pytest tests -q
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip ruff
+      - run: ruff check .
+      - run: ruff format --check .
