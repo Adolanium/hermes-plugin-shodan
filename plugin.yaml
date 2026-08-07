@@ -1,0 +1,33 @@
+name: shodan
+version: 0.1.0
+manifest_version: 1
+description: >-
+  Shodan.io for Hermes. Host intel, search, DNS, CVE lookups, network
+  monitoring and on-demand scanning, with a per-session credit budget and
+  response shaping that keeps results inside the context window.
+author: Adolanium
+kind: standalone
+
+# Core profile. The full profile adds shodan_scan, shodan_alert,
+# shodan_exploits, shodan_query and shodan_trends -- see README.
+provides_tools:
+  - shodan_host
+  - shodan_search
+  - shodan_count
+  - shodan_dns
+  - shodan_cve
+  - shodan_account
+  - shodan_meta
+
+provides_hooks:
+  - on_session_start
+  - on_session_reset
+
+requires_env:
+  - name: SHODAN_API_KEY
+    description: >-
+      Shodan API key. Found under "Account" once you are signed in. Without
+      one the plugin still runs, but only the keyless endpoints work
+      (InternetDB host lookups and CVEDB vulnerability data).
+    url: https://account.shodan.io
+    secret: true

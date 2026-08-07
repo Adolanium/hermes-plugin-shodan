@@ -1,0 +1,12 @@
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = [
+  "E501",   # long lines are almost all prose in tool descriptions
+  "B008",
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["E402"]  # conftest loads the plugin before the test imports run
